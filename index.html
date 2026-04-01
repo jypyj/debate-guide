@@ -413,20 +413,8 @@
 </head>
 <body>
 
-<!-- ───────────── Setup Overlay ───────────── -->
-<div id="setup-overlay">
-  <div class="setup-card">
-    <div class="icon">🔑</div>
-    <h2>AI 토론 피드백 설정</h2>
-    <p>선생님께서 제공한 Anthropic API 키를 입력하면<br>학생 여러분의 영어 문장에 AI 피드백을 받을 수 있습니다.</p>
-    <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" />
-    <div class="hint">* API 키는 브라우저에만 저장되며 외부로 전송되지 않습니다.</div>
-    <button class="btn-primary" onclick="saveApiKey()">시작하기</button>
-  </div>
-</div>
-
 <!-- ───────────── App ───────────── -->
-<div id="app" class="hidden">
+<div id="app">
 
   <header>
     <h1>📚 2026 고1 영어 — 토론 활동</h1>
@@ -594,9 +582,14 @@ const TOPICS = [
 ];
 
 /* ════════════════════════════════════════
+   CONFIG — Cloudflare Worker URL
+   배포 후 아래 URL을 본인의 Worker URL로 교체하세요.
+════════════════════════════════════════ */
+const WORKER_URL = 'https://debate-proxy.YOUR_SUBDOMAIN.workers.dev';
+
+/* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-let apiKey = '';
 let selectedTopic = null;
 let selectedPosition = null; // 'A' or 'B'
 
@@ -624,26 +617,6 @@ function init() {
     document.getElementById('char-count').textContent = this.value.length;
   });
 }
-
-/* ════════════════════════════════════════
-   API KEY
-════════════════════════════════════════ */
-function saveApiKey() {
-  const val = document.getElementById('api-key-input').value.trim();
-  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
-    alert('올바른 API 키를 입력해주세요. (sk-ant- 로 시작)');
-    return;
-  }
-  apiKey = val;
-  document.getElementById('setup-overlay').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  init();
-}
-
-// Allow Enter key in API input
-document.getElementById('api-key-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') saveApiKey();
-});
 
 /* ════════════════════════════════════════
    NAVIGATION
@@ -821,14 +794,9 @@ async function getFeedback(text) {
 점수 기준: 5=매우 우수, 4=우수, 3=보통, 2=미흡, 1=많은 개선 필요
 피드백은 고1 수준에 맞게 친근하고 구체적으로 작성해주세요.`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
@@ -920,6 +888,9 @@ function displayFeedback(text, fb) {
   document.getElementById('debate-panel').classList.add('hidden');
   document.getElementById('feedback-panel').classList.remove('hidden');
 }
+
+// 페이지 로드 시 바로 시작
+init();
 </script>
 </body>
 </html>

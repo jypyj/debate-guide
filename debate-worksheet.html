@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>생각을 나누는 영어 토론 | 2026 1학기 수행평가</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
+      background: #f0f4f8;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+      color: white;
+      padding: 28px 32px;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; letter-spacing: -0.5px; }
+    header p { opacity: 0.85; margin-top: 6px; font-size: 0.95rem; }
+
+    .container {
+      max-width: 920px;
+      margin: 32px auto 120px;
+      padding: 0 16px;
+    }
+
+    /* Student Info */
+    .student-info {
+      background: white;
+      border-radius: 14px;
+      padding: 22px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+    }
+    .student-info .field { flex: 1; }
+
+    /* Step cards */
+    .step-card {
+      background: white;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid #ebf0f6;
+    }
+    .step-badge {
+      background: #1a365d;
+      color: white;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+    .step-header h2 { font-size: 1.2rem; color: #1a365d; }
+    .step-desc { font-size: 0.88rem; color: #718096; margin-bottom: 18px; }
+
+    /* Form elements */
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #4a5568;
+      font-size: 0.88rem;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.93rem;
+      font-family: inherit;
+      background: #f8fafc;
+      transition: border-color 0.2s, background 0.2s;
+      color: #2d3748;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #2b6cb0;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(43,108,176,0.1);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* Topic selection */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .topic-category {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .topic-category h3 {
+      background: #ebf0f6;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      color: #1a365d;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+    .topic-options { padding: 10px 12px; }
+    .topic-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      cursor: pointer;
+    }
+    .topic-option input[type="radio"] {
+      margin-top: 3px;
+      accent-color: #2b6cb0;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .topic-option span { font-size: 0.84rem; line-height: 1.45; }
+    .topic-option:hover span { color: #2b6cb0; }
+
+    /* Brainstorm table */
+    .brainstorm-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid #e2e8f0;
+    }
+    .brainstorm-table th {
+      background: #ebf0f6;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: #1a365d;
+      border: 1.5px solid #e2e8f0;
+      text-align: center;
+    }
+    .brainstorm-table .row-label {
+      width: 90px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1.5px solid #e2e8f0;
+      padding: 12px 8px;
+    }
+    .brainstorm-table td {
+      border: 1.5px solid #e2e8f0;
+      padding: 0;
+      vertical-align: top;
+    }
+    .brainstorm-table td textarea {
+      border: none;
+      background: transparent;
+      min-height: 90px;
+      border-radius: 0;
+    }
+    .brainstorm-table td textarea:focus { background: #f0f7ff; box-shadow: none; border: none; }
+    .label-agree { background: #f0fff4; color: #276749; }
+    .label-disagree { background: #fff5f5; color: #c53030; }
+
+    /* Opinion cards */
+    .opinion-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .opinion-card {
+      border: 2.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .opinion-card:hover { border-color: #2b6cb0; transform: translateY(-1px); }
+    .opinion-card input[type="radio"] { display: none; }
+    .opinion-card .card-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .opinion-card .card-label { font-weight: 700; font-size: 1.15rem; }
+    .opinion-card .card-sub { font-size: 0.83rem; color: #a0aec0; margin-top: 4px; }
+    .selected-agree { border-color: #38a169 !important; background: #f0fff4; }
+    .selected-agree .card-label { color: #276749; }
+    .selected-disagree { border-color: #e53e3e !important; background: #fff5f5; }
+    .selected-disagree .card-label { color: #c53030; }
+
+    /* Member inputs */
+    .member-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Reason blocks */
+    .reason-block {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .reason-block:last-child { margin-bottom: 0; }
+    .reason-block-header {
+      background: #f0f7ff;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #1a365d;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+    .reason-block-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* Expressions */
+    .expressions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .expression-group {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      border-left: 3px solid #2b6cb0;
+    }
+    .expression-group h4 { font-size: 0.83rem; color: #2b6cb0; margin-bottom: 8px; font-weight: 700; }
+    .expression-group ul { list-style: none; }
+    .expression-group ul li { font-size: 0.81rem; color: #4a5568; padding: 2px 0; }
+    .expression-group ul li::before { content: '– '; color: #2b6cb0; }
+
+    .strategy-box {
+      background: #fffbeb;
+      border: 1.5px solid #f6e05e;
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .strategy-box h4 { font-size: 0.88rem; color: #744210; font-weight: 700; margin-bottom: 10px; }
+    .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .strategy-item { font-size: 0.83rem; color: #744210; }
+    .strategy-item strong { display: block; margin-bottom: 3px; }
+
+    /* Script table */
+    .script-table { width: 100%; border-collapse: collapse; }
+    .script-table td { border: 1.5px solid #e2e8f0; padding: 0; vertical-align: top; }
+    .script-table .row-label {
+      background: #ebf0f6;
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 0.83rem;
+      color: #1a365d;
+      width: 155px;
+      vertical-align: middle;
+      border: 1.5px solid #e2e8f0;
+    }
+    .script-table .row-input textarea { border: none; background: transparent; min-height: 85px; border-radius: 0; }
+    .script-table .row-input textarea:focus { background: #f0f7ff; box-shadow: none; border: none; }
+
+    /* Upload */
+    .upload-area {
+      border: 2.5px dashed #a0aec0;
+      border-radius: 12px;
+      padding: 44px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: #2b6cb0;
+      background: #ebf4ff;
+    }
+    .upload-area .upload-icon { font-size: 3rem; margin-bottom: 12px; }
+    .upload-area .upload-main { font-size: 0.95rem; font-weight: 600; color: #2d3748; }
+    .upload-area .upload-hint { font-size: 0.82rem; color: #a0aec0; margin-top: 6px; }
+    .upload-area .upload-btn {
+      display: inline-block;
+      margin-top: 14px;
+      background: #2b6cb0;
+      color: white;
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    #fileInput { display: none; }
+
+    .file-list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .file-item {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: #f8fafc;
+    }
+    .file-item-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .file-icon { font-size: 1.6rem; }
+    .file-info { flex: 1; }
+    .file-name { font-weight: 600; font-size: 0.9rem; word-break: break-all; }
+    .file-size { font-size: 0.8rem; color: #a0aec0; }
+    .remove-btn {
+      background: #fed7d7;
+      border: none;
+      cursor: pointer;
+      color: #c53030;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .remove-btn:hover { background: #fc8181; color: white; }
+    .media-preview { width: 100%; border-radius: 8px; max-height: 280px; }
+
+    /* Peer eval */
+    .peer-eval-grid { display: flex; flex-direction: column; gap: 14px; }
+    .peer-item {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .peer-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .peer-name-badge {
+      background: #ebf0f6;
+      color: #1a365d;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    /* Action bar */
+    .action-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 2px solid #e2e8f0;
+      padding: 14px 24px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.09);
+      z-index: 50;
+    }
+    .btn {
+      padding: 11px 24px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.9rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: #2b6cb0; color: white; }
+    .btn-primary:hover { background: #1a4e8a; }
+    .btn-secondary { background: #e2e8f0; color: #4a5568; }
+    .btn-secondary:hover { background: #cbd5e0; }
+    .btn-success { background: #38a169; color: white; }
+    .btn-success:hover { background: #2f855a; }
+    .btn-danger { background: #e53e3e; color: white; }
+    .btn-danger:hover { background: #c53030; }
+
+    /* Save indicator */
+    .save-toast {
+      position: fixed;
+      top: 20px; right: 20px;
+      background: #38a169;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 200;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .save-toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      background: #e2e8f0;
+      border-radius: 8px;
+      height: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #2b6cb0, #38a169);
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.4s;
+    }
+    .progress-label { font-size: 0.82rem; color: #718096; margin-bottom: 6px; text-align: right; }
+
+    @media (max-width: 640px) {
+      .topic-grid { grid-template-columns: 1fr; }
+      .opinion-cards { grid-template-columns: 1fr; }
+      .expressions-grid { grid-template-columns: 1fr; }
+      .strategy-grid { grid-template-columns: 1fr; }
+      .student-info { flex-direction: column; }
+      .member-grid { grid-template-columns: 1fr; }
+      .action-bar { flex-wrap: wrap; }
+      .script-table .row-label { width: 110px; }
+    }
+
+    @media print {
+      .action-bar, .save-toast, .progress-bar-wrap, .progress-label { display: none !important; }
+      body { background: white; }
+      .step-card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+      .container { margin-bottom: 0; }
+    }
+
+    /* ── 제출 모달 ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 36px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    .modal-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .modal-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; color: #1a365d; }
+    .modal-desc { font-size: 0.9rem; color: #718096; line-height: 1.7; margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: center; }
+    .btn-submit {
+      background: linear-gradient(135deg, #38a169, #276749);
+      color: white;
+      font-size: 1rem;
+      padding: 13px 32px;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .submit-warning { font-size: 0.82rem; color: #e53e3e; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="save-toast" id="saveToast">자동 저장됨 ✓</div>
+
+<header>
+  <h1>생각을 나누는 영어 토론</h1>
+  <p>2026 1학기 공통영어1 수행평가 | Artificial Intelligence and the Arts</p>
+</header>
+
+<div class="container">
+
+  <!-- Progress -->
+  <div class="progress-label" id="progressLabel">작성 진행률: 0%</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+  </div>
+
+  <!-- Student Info -->
+  <div class="student-info">
+    <div class="field">
+      <label for="studentId">학번</label>
+      <input type="text" id="studentId" placeholder="예: 10101">
+    </div>
+    <div class="field" style="flex: 2;">
+      <label for="studentName">이름</label>
+      <input type="text" id="studentName" placeholder="이름을 입력하세요">
+    </div>
+  </div>
+
+  <!-- ── STEP 1 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 1</span>
+      <h2>Choose the Topic</h2>
+    </div>
+    <p class="step-desc">교과서 4과 <strong>Artificial Intelligence and the Arts</strong> 글을 읽고 아래에서 주제를 선택하거나 직접 만드세요. AI와 관련된 나만의 주제도 환영합니다!</p>
+
+    <div class="topic-grid">
+      <div class="topic-category">
+        <h3>EDUCATION</h3>
+        <div class="topic-options">
+          <label class="topic-option"><input type="radio" name="topic" value="Can AI replace teachers?"><span>Can AI replace teachers?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Is it ethical to use AI to monitor student behavior and performance?"><span>Is it ethical to use AI to monitor student behavior and performance?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Should AI-generated work be considered plagiarism?"><span>Should AI-generated work be considered plagiarism?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Should AI tools be allowed in school assessments and exams?"><span>Should AI tools be allowed in school assessments and exams?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Will dependency on AI tools make students less creative or critical?"><span>Will dependency on AI tools make students less creative or critical?</span></label>
+        </div>
+      </div>
+
+      <div class="topic-category">
+        <h3>WORK</h3>
+        <div class="topic-options">
+          <label class="topic-option"><input type="radio" name="topic" value="Is it ethical for companies to replace human workers with AI?"><span>Is it ethical for companies to replace human workers with AI?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Is it okay to use AI in the hiring process?"><span>Is it okay to use AI in the hiring process?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Should companies use more AI programs to replace employees and cut the budget?"><span>Should companies use more AI programs to replace employees and cut the budget?</span></label>
+        </div>
+      </div>
+
+      <div class="topic-category">
+        <h3>ART</h3>
+        <div class="topic-options">
+          <label class="topic-option"><input type="radio" name="topic" value="Is AI art really art?"><span>Is AI art really art?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Should AI-generated content be protected by copyright?"><span>Should AI-generated content be protected by copyright?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Is AI creativity fundamentally different from human creativity?"><span>Is AI creativity fundamentally different from human creativity?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Who gets the rights to content created by AI?"><span>Who gets the rights to content created by AI? (AI / developer / user)</span></label>
+        </div>
+      </div>
+
+      <div class="topic-category">
+        <h3>SOCIETY</h3>
+        <div class="topic-options">
+          <label class="topic-option"><input type="radio" name="topic" value="What are the professions that can or cannot be replaced by AI?"><span>What are the professions that can or cannot be replaced by AI?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Is AI an environmentally sustainable tool?"><span>Is AI an environmentally sustainable tool?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Should governments limit the use of AI to protect human jobs?"><span>Should governments limit the use of AI to protect human jobs?</span></label>
+          <label class="topic-option"><input type="radio" name="topic" value="Does AI increase social inequality between rich and poor?"><span>Does AI increase social inequality between rich and poor?</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label for="customTopic">✏️ 직접 주제 만들기</label>
+      <input type="text" id="customTopic" placeholder="위 목록에 없는 나만의 AI 토론 주제를 입력하세요...">
+    </div>
+  </div>
+
+  <!-- ── STEP 2 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 2</span>
+      <h2>Brainstorming</h2>
+    </div>
+    <p class="step-desc">선택한 주제에 관해 찬성·반대 양쪽의 장단점을 자유롭게 정리해보세요.</p>
+
+    <table class="brainstorm-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">입장</th>
+          <th>Pros (장점 / 찬성 근거)</th>
+          <th>Cons (단점 / 반대 근거)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label label-agree">Agree</td>
+          <td><textarea id="agreePros" placeholder="찬성 입장의 장점을 적어보세요..."></textarea></td>
+          <td><textarea id="agreeCons" placeholder="찬성 입장의 단점을 적어보세요..."></textarea></td>
+        </tr>
+        <tr>
+          <td class="row-label label-disagree">Disagree</td>
+          <td><textarea id="disagreePros" placeholder="반대 입장의 장점을 적어보세요..."></textarea></td>
+          <td><textarea id="disagreeCons" placeholder="반대 입장의 단점을 적어보세요..."></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── STEP 3 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 3</span>
+      <h2>Opinion — 나의 입장 선택</h2>
+    </div>
+    <p class="step-desc">브레인스토밍을 바탕으로 최종 입장을 결정하세요.</p>
+
+    <div class="opinion-cards">
+      <div class="opinion-card" id="agreeCard" onclick="selectOpinion('agree')">
+        <input type="radio" name="opinion" value="agree" id="opAgree">
+        <div class="card-icon">👍</div>
+        <div class="card-label">Agree</div>
+        <div class="card-sub">찬성합니다</div>
+      </div>
+      <div class="opinion-card" id="disagreeCard" onclick="selectOpinion('disagree')">
+        <input type="radio" name="opinion" value="disagree" id="opDisagree">
+        <div class="card-icon">👎</div>
+        <div class="card-label">Disagree</div>
+        <div class="card-sub">반대합니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 4</span>
+      <h2>Grouping — 그룹 구성</h2>
+    </div>
+    <p class="step-desc">같은 의견 또는 같은 주제의 친구들과 4명씩 그룹을 만드세요.</p>
+
+    <div class="member-grid">
+      <div><label>멤버 1</label><input type="text" id="member1" placeholder="이름"></div>
+      <div><label>멤버 2</label><input type="text" id="member2" placeholder="이름"></div>
+      <div><label>멤버 3</label><input type="text" id="member3" placeholder="이름"></div>
+      <div><label>멤버 4</label><input type="text" id="member4" placeholder="이름"></div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 5</span>
+      <h2>Reasons &amp; Evidence</h2>
+    </div>
+    <p class="step-desc">내 입장을 뒷받침할 이유와 근거를 정리하세요. 통계, 전문가 의견, 실제 사례, 논리적 설명 등을 활용하면 더 설득력 있어집니다.</p>
+
+    <div class="reason-block">
+      <div class="reason-block-header">📌 Reason 1</div>
+      <div class="reason-block-body">
+        <div>
+          <label>이유 (영어로 작성)</label>
+          <textarea id="reason1" placeholder="e.g. First, AI cannot fully understand human emotions and creativity."></textarea>
+        </div>
+        <div>
+          <label>근거 — Evidence (통계, 전문가 의견, 예시 등)</label>
+          <textarea id="evidence1" placeholder="e.g. According to a 2023 study, 78% of teachers believe..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="reason-block">
+      <div class="reason-block-header">📌 Reason 2</div>
+      <div class="reason-block-body">
+        <div>
+          <label>이유 (영어로 작성)</label>
+          <textarea id="reason2" placeholder="e.g. Second, AI lacks moral judgment in complex situations."></textarea>
+        </div>
+        <div>
+          <label>근거 — Evidence</label>
+          <textarea id="evidence2" placeholder="근거를 작성하세요..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="reason-block">
+      <div class="reason-block-header">📌 Reason 3 <span style="font-weight:400; font-size:0.8rem;">(선택)</span></div>
+      <div class="reason-block-body">
+        <div>
+          <label>이유 (영어로 작성)</label>
+          <textarea id="reason3" placeholder="세 번째 이유... (선택 사항)"></textarea>
+        </div>
+        <div>
+          <label>근거 — Evidence</label>
+          <textarea id="evidence3" placeholder="근거를 작성하세요... (선택 사항)"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 6 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 6</span>
+      <h2>Expressions — 토론 표현 참고</h2>
+    </div>
+    <p class="step-desc">토론에서 활용할 수 있는 핵심 표현들입니다. 이 표현들을 사용하면 점수에 도움이 됩니다!</p>
+
+    <div class="expressions-grid">
+      <div class="expression-group">
+        <h4>1. 내 의견 전달하기</h4>
+        <ul>
+          <li>I think that...</li>
+          <li>In my opinion, ...</li>
+          <li>I believe that...</li>
+          <li>From my perspective, ...</li>
+          <li>As far as I'm concerned, ...</li>
+        </ul>
+      </div>
+      <div class="expression-group">
+        <h4>2. 동의할 때</h4>
+        <ul>
+          <li>I agree with your point.</li>
+          <li>That's a good point.</li>
+          <li>I completely agree with you.</li>
+          <li>I see what you mean.</li>
+          <li>You're absolutely right.</li>
+          <li>That makes sense.</li>
+        </ul>
+      </div>
+      <div class="expression-group">
+        <h4>3. 공손하게 반대하기</h4>
+        <ul>
+          <li>I understand your point, but I disagree.</li>
+          <li>I see your perspective, but I think differently.</li>
+          <li>That's interesting, but I don't agree.</li>
+          <li>I respectfully disagree.</li>
+          <li>I understand, but...</li>
+          <li>I see your point, however...</li>
+        </ul>
+      </div>
+      <div class="expression-group">
+        <h4>4. 논리적으로 반박하기</h4>
+        <ul>
+          <li>However, I think there is a problem with that idea.</li>
+          <li>I don't think that's always true.</li>
+          <li>That may be true, but…</li>
+          <li>On the other hand, ...</li>
+          <li>I'd like to point out that...</li>
+        </ul>
+      </div>
+      <div class="expression-group">
+        <h4>5. 질문하고 확인하기</h4>
+        <ul>
+          <li>What do you mean by that?</li>
+          <li>Can you explain more?</li>
+          <li>Could you give an example?</li>
+          <li>Why do you think so?</li>
+        </ul>
+      </div>
+      <div class="expression-group">
+        <h4>6. 연결하기 / 마무리</h4>
+        <ul>
+          <li>In addition, / Also, / Furthermore,</li>
+          <li>For example, / Because of this,</li>
+          <li>As a result, / Therefore,</li>
+          <li>To sum up, ... / In conclusion, ...</li>
+          <li>Overall, I believe...</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="strategy-box">
+      <h4>★ 핵심 전략</h4>
+      <div class="strategy-grid">
+        <div class="strategy-item"><strong>① 의견 + 이유 구조</strong>"I think ... because ..." 형식으로 말하기</div>
+        <div class="strategy-item"><strong>② 연결어 + 근거 사용</strong>First, ... / Second, ... / Finally, ...</div>
+        <div class="strategy-item"><strong>③ 상대방 존중 필수!</strong>"You are wrong" (✗) → "I see your point, but..." (✓)</div>
+        <div class="strategy-item"><strong>④ 상대 말 끊지 않기</strong>끝까지 듣고 반응하기 — 토론의 기본 예절</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 7 ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">STEP 7</span>
+      <h2>Get Ready to Debate — 토론 스크립트</h2>
+    </div>
+    <p class="step-desc">토론 전에 내 주장과 예상 반박을 미리 정리해두세요. STEP 5의 내용을 참고하세요.</p>
+
+    <table class="script-table">
+      <tr>
+        <td class="row-label">My opinion on the topic</td>
+        <td class="row-input"><textarea id="scriptOpinion" placeholder="주제에 대한 나의 최종 입장을 한 문장으로 (영어로)...&#10;e.g. I believe that AI should not replace human teachers because..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">Reason 1</td>
+        <td class="row-input"><textarea id="scriptReason1" placeholder="첫 번째 이유와 근거 (영어로)..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">Reason 2</td>
+        <td class="row-input"><textarea id="scriptReason2" placeholder="두 번째 이유와 근거 (영어로)..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">(Reason 3)</td>
+        <td class="row-input"><textarea id="scriptReason3" placeholder="세 번째 이유 (선택)..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">예상되는 의견 반박 1</td>
+        <td class="row-input"><textarea id="counter1" placeholder="상대방이 예상하는 주장:&#10;나의 반박:&#10;e.g. I see your point, however..."></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">예상되는 의견 반박 2</td>
+        <td class="row-input"><textarea id="counter2" placeholder="상대방이 예상하는 주장:&#10;나의 반박:"></textarea></td>
+      </tr>
+      <tr>
+        <td class="row-label">(예상되는 의견 반박 3)</td>
+        <td class="row-input"><textarea id="counter3" placeholder="(선택) 추가 예상 반박..."></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── Upload ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">토론 녹음 / 녹화</span>
+      <h2>Debate Recording Upload</h2>
+    </div>
+    <p class="step-desc">토론 후 녹음 파일 또는 동영상 파일을 올려주세요. 여러 파일을 동시에 선택할 수 있습니다.</p>
+
+    <div class="upload-area" id="uploadArea"
+         ondragover="handleDragOver(event)"
+         ondrop="handleDrop(event)"
+         ondragleave="handleDragLeave(event)"
+         onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">🎙️</div>
+      <div class="upload-main">파일을 드래그하거나 클릭하여 선택</div>
+      <div class="upload-hint">음성: MP3, WAV, M4A, OGG / 동영상: MP4, MOV, AVI, WebM</div>
+      <div class="upload-hint">여러 파일 선택 가능 · 파일은 브라우저에서만 재생되며 자동으로 업로드되지 않습니다</div>
+      <div class="upload-btn">📂 파일 선택하기</div>
+    </div>
+    <input type="file" id="fileInput" accept="audio/*,video/*" multiple onchange="handleFileSelect(event)">
+
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <!-- ── Peer Evaluation ── -->
+  <div class="step-card">
+    <div class="step-header">
+      <span class="step-badge">동료 평가</span>
+      <h2>Peer Evaluation</h2>
+    </div>
+    <p class="step-desc">그룹 멤버를 평가하고 구체적인 피드백을 작성하세요. 성실하고 구체적인 피드백은 동료평가 만점(2점) 기준입니다.</p>
+    <div class="peer-eval-grid" id="peerEvalGrid">
+      <p style="color:#a0aec0; font-size:0.88rem;">STEP 4에서 그룹 멤버를 입력하면 동료 평가 칸이 자동으로 나타납니다.</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- 제출 확인 모달 -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">📤</div>
+    <div class="modal-title" id="modalTitle">제출하시겠습니까?</div>
+    <div class="modal-desc" id="modalDesc">
+      학번과 이름, 주제, 입장, 이유/근거를 모두 작성했는지 확인하세요.<br>
+      제출 후에도 수정은 가능하지만, 다시 제출 버튼을 눌러야 반영됩니다.
+    </div>
+    <p class="submit-warning" id="submitWarning"></p>
+    <div class="modal-actions" id="modalActions">
+      <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+      <button class="btn btn-submit" id="confirmSubmitBtn" onclick="confirmSubmit()">제출하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Action Bar -->
+<div class="action-bar">
+  <button class="btn btn-secondary" onclick="clearAll()">🗑 초기화</button>
+  <button class="btn btn-primary" onclick="saveData()">💾 저장</button>
+  <button class="btn btn-success" onclick="window.print()">🖨 인쇄 / PDF</button>
+  <button class="btn" style="background:#e9d8fd;color:#553c9a;" onclick="downloadJSON()">📥 백업</button>
+  <button class="btn btn-submit" onclick="openSubmitModal()">📤 제출하기</button>
+</div>
+
+<script>
+// ★ 선생님: Apps Script 배포 후 아래 URL을 교체하세요 ★
+const APPS_SCRIPT_URL = https://script.google.com/macros/s/AKfycbx4pSwPahgK0Sn08HIkbbbInSPTNOnbkbQaejDagwk9pWLlSMIvE6v7WyuODRJRr-NnKQ/exec;
+
+const SAVE_KEY = 'debate_ws_2026';
+
+const TEXT_IDS = [
+  'studentId','studentName','customTopic',
+  'agreePros','agreeCons','disagreePros','disagreeCons',
+  'member1','member2','member3','member4',
+  'reason1','evidence1','reason2','evidence2','reason3','evidence3',
+  'scriptOpinion','scriptReason1','scriptReason2','scriptReason3',
+  'counter1','counter2','counter3'
+];
+
+let uploadedFiles = [];
+
+/* ─── Save / Load ─── */
+function saveData() {
+  const d = {};
+  TEXT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) d[id] = el.value;
+  });
+  const tr = document.querySelector('input[name="topic"]:checked');
+  d.topic = tr ? tr.value : '';
+  const or = document.querySelector('input[name="opinion"]:checked');
+  d.opinion = or ? or.value : '';
+
+  // peer feedbacks
+  d.peerFeedbacks = [];
+  document.querySelectorAll('.peer-feedback').forEach(el => d.peerFeedbacks.push(el.value));
+
+  localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+  showToast();
+  updateProgress();
+}
+
+function loadData() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    TEXT_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && d[id] !== undefined) el.value = d[id];
+    });
+    if (d.topic) {
+      const r = document.querySelector(`input[name="topic"][value="${CSS.escape(d.topic)}"]`);
+      if (r) r.checked = true;
+    }
+    if (d.opinion) selectOpinion(d.opinion, true);
+    updatePeerEval(d.peerFeedbacks || []);
+  } catch(e) { /* ignore */ }
+}
+
+/* ─── Toast ─── */
+function showToast() {
+  const t = document.getElementById('saveToast');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ─── Progress ─── */
+function updateProgress() {
+  const allFields = [
+    ...TEXT_IDS.map(id => document.getElementById(id)?.value?.trim()),
+    document.querySelector('input[name="topic"]:checked') ? 'x' : '',
+    document.querySelector('input[name="opinion"]:checked') ? 'x' : ''
+  ];
+  const filled = allFields.filter(v => v && v.length > 0).length;
+  const pct = Math.round((filled / allFields.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `작성 진행률: ${pct}%`;
+}
+
+/* ─── Auto-save setup ─── */
+function setupAutoSave() {
+  TEXT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => { saveData(); });
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(r => {
+    r.addEventListener('change', () => saveData());
+  });
+  ['member1','member2','member3','member4'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => updatePeerEval());
+  });
+  document.getElementById('studentName')?.addEventListener('input', () => updatePeerEval());
+}
+
+/* ─── Opinion selection ─── */
+function selectOpinion(type, silent) {
+  document.getElementById('agreeCard').className = 'opinion-card';
+  document.getElementById('disagreeCard').className = 'opinion-card';
+  if (type === 'agree') {
+    document.getElementById('opAgree').checked = true;
+    document.getElementById('agreeCard').className = 'opinion-card selected-agree';
+  } else {
+    document.getElementById('opDisagree').checked = true;
+    document.getElementById('disagreeCard').className = 'opinion-card selected-disagree';
+  }
+  if (!silent) saveData();
+}
+
+/* ─── Peer evaluation ─── */
+function updatePeerEval(savedFeedbacks) {
+  const myName = document.getElementById('studentName')?.value?.trim();
+  const members = ['member1','member2','member3','member4']
+    .map(id => document.getElementById(id)?.value?.trim())
+    .filter(v => v);
+  const others = members.filter(m => m !== myName);
+
+  const grid = document.getElementById('peerEvalGrid');
+  if (others.length === 0) {
+    grid.innerHTML = '<p style="color:#a0aec0; font-size:0.88rem;">STEP 4에서 그룹 멤버를 입력하면 동료 평가 칸이 자동으로 나타납니다.</p>';
+    return;
+  }
+
+  grid.innerHTML = others.map((name, i) => `
+    <div class="peer-item">
+      <div class="peer-item-header">
+        <span class="peer-name-badge">👤 ${name}</span>
+      </div>
+      <div>
+        <label>피드백 (구체적으로 작성하면 만점!)</label>
+        <textarea class="peer-feedback" data-index="${i}"
+          placeholder="${name} 학생에 대한 구체적인 피드백을 작성하세요.&#10;예: 의견을 명확하게 전달했고, 근거가 논리적이었습니다. 다만 반박 시 표현이 조금 더 다양했으면 좋겠습니다."
+        >${(savedFeedbacks && savedFeedbacks[i]) ? savedFeedbacks[i] : ''}</textarea>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.peer-feedback').forEach(el => {
+    el.addEventListener('input', () => saveData());
+  });
+}
+
+/* ─── File upload ─── */
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.add('drag-over');
+}
+function handleDragLeave() {
+  document.getElementById('uploadArea').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files)
+    .filter(f => f.type.startsWith('audio/') || f.type.startsWith('video/'));
+  addFiles(files);
+}
+function handleFileSelect(e) {
+  addFiles(Array.from(e.target.files));
+  e.target.value = ''; // reset so same file can be re-added if removed
+}
+
+function addFiles(files) {
+  files.forEach(file => {
+    const dup = uploadedFiles.find(f => f.name === file.name && f.size === file.size);
+    if (!dup) { uploadedFiles.push(file); renderFileItem(file); }
+  });
+}
+
+function fmtSize(b) {
+  if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+  return (b / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderFileItem(file) {
+  const isAudio = file.type.startsWith('audio/');
+  const isVideo = file.type.startsWith('video/');
+  const icon = isAudio ? '🎵' : isVideo ? '🎬' : '📁';
+  const url = URL.createObjectURL(file);
+  const id = 'fi_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+  const div = document.createElement('div');
+  div.className = 'file-item';
+  div.id = id;
+  div.innerHTML = `
+    <div class="file-item-header">
+      <span class="file-icon">${icon}</span>
+      <div class="file-info">
+        <div class="file-name">${file.name}</div>
+        <div class="file-size">${fmtSize(file.size)}</div>
+      </div>
+      <button class="remove-btn" onclick="removeFile('${id}','${file.name}',${file.size})">✕ 삭제</button>
+    </div>
+    ${isAudio ? `<audio controls class="media-preview" src="${url}"></audio>` : ''}
+    ${isVideo ? `<video controls class="media-preview" src="${url}"></video>` : ''}
+  `;
+  document.getElementById('fileList').appendChild(div);
+}
+
+function removeFile(id, name, size) {
+  uploadedFiles = uploadedFiles.filter(f => !(f.name === name && f.size === size));
+  document.getElementById(id)?.remove();
+}
+
+/* ─── Clear all ─── */
+function clearAll() {
+  if (!confirm('모든 입력 내용을 초기화하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+  localStorage.removeItem(SAVE_KEY);
+  TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.getElementById('agreeCard').className = 'opinion-card';
+  document.getElementById('disagreeCard').className = 'opinion-card';
+  document.getElementById('fileList').innerHTML = '';
+  uploadedFiles = [];
+  updatePeerEval();
+  updateProgress();
+}
+
+/* ─── Download JSON ─── */
+function downloadJSON() {
+  const d = {};
+  TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) d[id] = el.value; });
+  const tr = document.querySelector('input[name="topic"]:checked');
+  d.topic = tr ? tr.value : '';
+  const or = document.querySelector('input[name="opinion"]:checked');
+  d.opinion = or ? or.value : '';
+  d.peerFeedbacks = [];
+  document.querySelectorAll('.peer-feedback').forEach(el => d.peerFeedbacks.push(el.value));
+  d.savedAt = new Date().toLocaleString('ko-KR');
+
+  const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const name = (d.studentId || '') + '_' + (d.studentName || 'student');
+  a.download = `토론학습지_${name}.json`;
+  a.click();
+}
+
+/* ─── 제출 모달 ─── */
+function collectFormData() {
+  const d = {};
+  TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) d[id] = el.value; });
+  const tr = document.querySelector('input[name="topic"]:checked');
+  d.topic = tr ? tr.value : '';
+  const or = document.querySelector('input[name="opinion"]:checked');
+  d.opinion = or ? or.value : '';
+  d.peerFeedbacks = [];
+  document.querySelectorAll('.peer-feedback').forEach(el => d.peerFeedbacks.push(el.value));
+  d.submittedAt = new Date().toLocaleString('ko-KR');
+  return d;
+}
+
+function openSubmitModal() {
+  // 필수 항목 검사
+  const d = collectFormData();
+  const missing = [];
+  if (!d.studentId.trim())   missing.push('학번');
+  if (!d.studentName.trim()) missing.push('이름');
+  if (!d.topic && !d.customTopic) missing.push('토론 주제');
+  if (!d.opinion)            missing.push('입장 (찬성/반대)');
+  if (!d.reason1.trim())     missing.push('Reason 1');
+  if (!d.evidence1.trim())   missing.push('Evidence 1');
+  if (!d.reason2.trim())     missing.push('Reason 2');
+  if (!d.evidence2.trim())   missing.push('Evidence 2');
+
+  const warn = document.getElementById('submitWarning');
+  if (missing.length > 0) {
+    warn.style.display = 'block';
+    warn.textContent = '⚠️ 아직 비어있는 필수 항목: ' + missing.join(', ');
+  } else {
+    warn.style.display = 'none';
+  }
+
+  // 모달 초기 상태로 리셋
+  document.getElementById('modalIcon').textContent = '📤';
+  document.getElementById('modalTitle').textContent = '제출하시겠습니까?';
+  document.getElementById('modalDesc').innerHTML =
+    `<strong>${d.studentId} ${d.studentName}</strong>의 답변을 제출합니다.<br>
+     토론 주제: <em>${d.topic || d.customTopic || '(없음)'}</em><br>
+     입장: <strong>${d.opinion === 'agree' ? '👍 찬성' : d.opinion === 'disagree' ? '👎 반대' : '(선택 안 함)'}</strong><br><br>
+     제출 후에도 수정하여 다시 제출할 수 있습니다.`;
+  document.getElementById('modalActions').style.display = 'flex';
+  document.getElementById('confirmSubmitBtn').disabled = false;
+  document.getElementById('confirmSubmitBtn').textContent = '제출하기';
+
+  document.getElementById('submitModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('submitModal').classList.remove('show');
+}
+
+async function confirmSubmit() {
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    alert('선생님: Apps Script URL이 설정되지 않았습니다.\ndebate-worksheet.html 파일에서 APPS_SCRIPT_URL을 교체해주세요.');
+    return;
+  }
+
+  const btn = document.getElementById('confirmSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '제출 중...';
+  document.getElementById('submitWarning').style.display = 'none';
+
+  try {
+    const data = collectFormData();
+
+    // Google Apps Script는 no-cors로 전송 (CORS 우회)
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data)
+    });
+
+    // no-cors라 응답 확인 불가 → 성공으로 처리
+    showSubmitSuccess();
+
+  } catch (err) {
+    document.getElementById('submitWarning').style.display = 'block';
+    document.getElementById('submitWarning').textContent = '❌ 네트워크 오류: ' + err.message + ' — 인터넷 연결을 확인하고 다시 시도하세요.';
+    btn.disabled = false;
+    btn.textContent = '다시 시도';
+  }
+}
+
+function showSubmitSuccess() {
+  document.getElementById('modalIcon').textContent = '✅';
+  document.getElementById('modalTitle').textContent = '제출 완료!';
+  document.getElementById('modalDesc').innerHTML =
+    '답변이 성공적으로 제출되었습니다.<br>선생님이 확인할 수 있습니다.<br><br>' +
+    '<span style="font-size:0.82rem;color:#a0aec0;">수정이 필요하면 내용을 바꾼 후 다시 제출하세요.</span>';
+  document.getElementById('modalActions').style.display = 'none';
+  // 3초 후 자동 닫기
+  setTimeout(() => closeModal(), 3500);
+}
+
+/* ─── Init ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  setupAutoSave();
+  updateProgress();
+});
+</script>
+</body>
+</html>

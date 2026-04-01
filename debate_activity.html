@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영어 토론 활동 | 2026 고1 영어</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --primary-dark: #3730a3;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Setup Overlay ── */
+    #setup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.7);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    .setup-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .setup-card .icon { font-size: 48px; margin-bottom: 12px; }
+    .setup-card h2 { font-size: 1.4rem; color: var(--gray-800); margin-bottom: 8px; }
+    .setup-card p { color: var(--gray-500); font-size: .9rem; margin-bottom: 24px; }
+    .setup-card input {
+      width: 100%; padding: 12px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px; font-size: .95rem;
+      outline: none; transition: border-color .2s;
+      margin-bottom: 8px;
+    }
+    .setup-card input:focus { border-color: var(--primary); }
+    .setup-card .hint {
+      font-size: .78rem; color: var(--gray-500);
+      margin-bottom: 20px; text-align: left;
+    }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 12px 28px; font-size: 1rem;
+      font-weight: 600; cursor: pointer;
+      width: 100%; transition: background .2s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { background: var(--gray-300); cursor: not-allowed; }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 20px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      box-shadow: var(--shadow);
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    .student-info {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .student-info input {
+      padding: 7px 12px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-radius: 8px;
+      background: rgba(255,255,255,.15);
+      color: #fff; font-size: .85rem;
+      outline: none; width: 100px;
+      transition: border-color .2s;
+    }
+    .student-info input::placeholder { color: rgba(255,255,255,.7); }
+    .student-info input:focus { border-color: rgba(255,255,255,.8); }
+    .student-info label { font-size: .8rem; opacity: .8; }
+
+    /* ── Main ── */
+    main { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── Step indicator ── */
+    .steps {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 32px;
+    }
+    .step {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .85rem; font-weight: 600;
+      color: var(--gray-400, #9ca3af);
+    }
+    .step.active { color: var(--primary); }
+    .step.done { color: var(--success); }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700;
+      transition: background .3s, color .3s;
+    }
+    .step.active .step-num { background: var(--primary); color: #fff; }
+    .step.done .step-num { background: var(--success); color: #fff; }
+    .step-line { flex: 1; height: 2px; background: var(--gray-200); margin: 0 8px; }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 16px; color: var(--gray-800);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── Topic cards ── */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+    .topic-card {
+      background: #fff;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s, transform .15s;
+      text-align: center;
+    }
+    .topic-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .topic-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(79,70,229,.1);
+    }
+    .topic-card .tc-icon { font-size: 32px; margin-bottom: 10px; }
+    .topic-card .tc-title { font-size: .9rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+    .topic-card .tc-sub { font-size: .78rem; color: var(--gray-500); }
+
+    /* ── Debate panel ── */
+    #debate-panel { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .topic-header {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary);
+      box-shadow: var(--shadow);
+    }
+    .topic-header .th-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); margin-bottom: 4px; }
+    .topic-header .th-question { font-size: 1.15rem; font-weight: 700; color: var(--gray-800); }
+    .topic-header .th-context { font-size: .85rem; color: var(--gray-600); margin-top: 8px; line-height: 1.5; }
+
+    .position-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .position-btn {
+      background: #fff;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+    }
+    .position-btn:hover { border-color: var(--primary); }
+    .position-btn.selected-a {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .position-btn.selected-b {
+      border-color: var(--danger);
+      background: var(--danger-light);
+    }
+    .position-btn .pb-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem; font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .position-btn:first-child .pb-badge { background: var(--primary-light); color: var(--primary); }
+    .position-btn:last-child .pb-badge { background: var(--danger-light); color: var(--danger); }
+    .position-btn.selected-a .pb-badge { background: var(--primary); color: #fff; }
+    .position-btn.selected-b .pb-badge { background: var(--danger); color: #fff; }
+    .position-btn .pb-kr { font-size: .9rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+    .position-btn .pb-en { font-size: .78rem; color: var(--gray-500); font-style: italic; }
+
+    /* ── Writing area ── */
+    .writing-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .writing-card label {
+      display: block;
+      font-size: .9rem; font-weight: 700;
+      color: var(--gray-700); margin-bottom: 8px;
+    }
+    .hint-box {
+      background: var(--warning-light);
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .82rem; color: var(--gray-700);
+      margin-bottom: 14px;
+    }
+    .hint-box strong { color: var(--warning); }
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      font-size: .95rem;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      transition: border-color .2s;
+      font-family: inherit;
+    }
+    textarea:focus { border-color: var(--primary); }
+    .char-count { text-align: right; font-size: .78rem; color: var(--gray-500); margin-top: 6px; }
+
+    .submit-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .btn-back {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: none; border-radius: 10px;
+      padding: 12px 20px; font-size: .9rem;
+      font-weight: 600; cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-back:hover { background: var(--gray-200); }
+    .btn-submit {
+      flex: 1;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 14px 28px; font-size: 1rem;
+      font-weight: 700; cursor: pointer;
+      transition: background .2s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--primary-dark); }
+    .btn-submit:active { transform: scale(.98); }
+    .btn-submit:disabled { background: var(--gray-300); cursor: not-allowed; }
+
+    /* loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Feedback panel ── */
+    #feedback-panel { animation: fadeIn .4s ease; }
+
+    .feedback-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .feedback-header .fh-icon { font-size: 32px; }
+    .feedback-header h2 { font-size: 1.2rem; font-weight: 700; }
+
+    .submitted-text {
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .9rem; color: var(--gray-700);
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary);
+    }
+    .submitted-text span { font-weight: 700; color: var(--gray-800); }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .fb-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .fb-card .fc-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .fc-icon { font-size: 22px; }
+    .fc-label { font-size: .9rem; font-weight: 700; }
+    .fc-score {
+      margin-left: auto;
+      font-weight: 700; font-size: .85rem;
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    .score-5 { background: #d1fae5; color: #065f46; }
+    .score-4 { background: #d1fae5; color: #065f46; }
+    .score-3 { background: #fef3c7; color: #92400e; }
+    .score-2 { background: #fee2e2; color: #991b1b; }
+    .score-1 { background: #fee2e2; color: #991b1b; }
+
+    .fb-card .fc-body { font-size: .85rem; color: var(--gray-600); line-height: 1.65; }
+    .fb-card .fc-body ul { padding-left: 16px; }
+    .fb-card .fc-body li { margin-bottom: 4px; }
+
+    .improved-card {
+      background: var(--success-light);
+      border: 2px solid #a7f3d0;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .improved-card .ic-head {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; font-size: .95rem; color: var(--success);
+      margin-bottom: 12px;
+    }
+    .improved-card .ic-text {
+      font-size: .95rem; color: var(--gray-800);
+      line-height: 1.7;
+      font-style: italic;
+    }
+    .improved-card .ic-text p { margin-bottom: 6px; }
+
+    .btn-retry {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 11px 24px;
+      font-size: .9rem; font-weight: 700;
+      cursor: pointer; transition: all .2s;
+      margin-right: 10px;
+    }
+    .btn-retry:hover { background: var(--primary-light); }
+    .btn-new {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 11px 24px; font-size: .9rem;
+      font-weight: 700; cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-new:hover { background: var(--primary-dark); }
+
+    /* error */
+    .error-box {
+      background: var(--danger-light);
+      border: 1px solid #fca5a5;
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--danger);
+      font-size: .88rem;
+      margin-bottom: 16px;
+    }
+
+    /* responsive */
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .position-grid { grid-template-columns: 1fr; }
+      .feedback-grid { grid-template-columns: 1fr; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ───────────── Setup Overlay ───────────── -->
+<div id="setup-overlay">
+  <div class="setup-card">
+    <div class="icon">🔑</div>
+    <h2>AI 토론 피드백 설정</h2>
+    <p>선생님께서 제공한 Anthropic API 키를 입력하면<br>학생 여러분의 영어 문장에 AI 피드백을 받을 수 있습니다.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" />
+    <div class="hint">* API 키는 브라우저에만 저장되며 외부로 전송되지 않습니다.</div>
+    <button class="btn-primary" onclick="saveApiKey()">시작하기</button>
+  </div>
+</div>
+
+<!-- ───────────── App ───────────── -->
+<div id="app" class="hidden">
+
+  <header>
+    <h1>📚 2026 고1 영어 — 토론 활동</h1>
+    <div class="student-info">
+      <div>
+        <label>학번</label>
+        <input type="text" id="student-id" placeholder="20001" maxlength="10" />
+      </div>
+      <div>
+        <label>이름</label>
+        <input type="text" id="student-name" placeholder="홍길동" maxlength="10" />
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Step indicator -->
+    <div class="steps">
+      <div class="step active" id="step1">
+        <div class="step-num">1</div>
+        <span>주제 선택</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" id="step2">
+        <div class="step-num">2</div>
+        <span>입장 &amp; 작성</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" id="step3">
+        <div class="step-num">3</div>
+        <span>AI 피드백</span>
+      </div>
+    </div>
+
+    <!-- ── Section 1: Topic Selection ── -->
+    <div id="topic-section">
+      <div class="section-title">🗂️ 토론 주제를 선택하세요</div>
+      <div class="topic-grid" id="topic-grid"></div>
+    </div>
+
+    <!-- ── Section 2: Debate ── -->
+    <div id="debate-panel" class="hidden">
+
+      <div class="topic-header" id="topic-header"></div>
+
+      <div class="section-title">🙋 나의 입장을 선택하세요</div>
+      <div class="position-grid" id="position-grid"></div>
+
+      <div class="writing-card">
+        <label>✏️ 영어로 나의 의견을 한 문장으로 써봅시다</label>
+        <div class="hint-box" id="writing-hint"></div>
+        <textarea id="writing-input" placeholder="I believe that ... because ..." rows="4"></textarea>
+        <div class="char-count"><span id="char-count">0</span> / 300자</div>
+      </div>
+
+      <div id="error-box" class="error-box hidden"></div>
+
+      <div class="submit-row">
+        <button class="btn-back" onclick="goToTopics()">← 주제 다시 선택</button>
+        <button class="btn-submit" id="submit-btn" onclick="submitDebate()">
+          <span id="submit-label">제출하고 피드백 받기</span>
+          <div class="spinner hidden" id="submit-spinner"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Section 3: Feedback ── -->
+    <div id="feedback-panel" class="hidden">
+
+      <div class="feedback-header">
+        <div class="fh-icon">🤖</div>
+        <div>
+          <h2>AI 피드백 결과</h2>
+          <div style="font-size:.82rem;color:var(--gray-500)">논리성 · 어법 · 어휘 분석 결과입니다</div>
+        </div>
+      </div>
+
+      <div class="submitted-text">
+        <div style="font-size:.78rem;color:var(--gray-500);margin-bottom:4px">제출한 문장</div>
+        <span id="display-submitted"></span>
+      </div>
+
+      <div class="feedback-grid" id="feedback-grid"></div>
+
+      <div class="improved-card" id="improved-card">
+        <div class="ic-head">✨ AI 개선 문장 제안</div>
+        <div class="ic-text" id="improved-text"></div>
+      </div>
+
+      <div>
+        <button class="btn-retry" onclick="goToWrite()">↩ 다시 쓰기</button>
+        <button class="btn-new" onclick="goToTopics()">새 주제 선택</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   DATA — Debate Topics
+════════════════════════════════════════ */
+const TOPICS = [
+  {
+    id: 'no-kids-zone',
+    icon: '🚫👶',
+    title: '노키즈존',
+    subtitle: 'No-Kids Zone',
+    question: '노키즈존은 허용되어야 하는가?',
+    context: '지문(40번): 아이들의 자립심과 회복탄력성을 위해 더 많은 공공 공간이 필요하다는 주장을 바탕으로, 식당·카페 등에서 어린이 출입을 제한하는 노키즈존의 허용 여부를 토론해봅시다.',
+    posA_kr: '찬성 — 허용해야 한다',
+    posA_en: 'No-kids zones SHOULD be allowed',
+    posA_hint: '업주의 영업 자유 · 다른 손님의 편의 보호 측면에서 생각해보세요.',
+    posB_kr: '반대 — 허용하면 안 된다',
+    posB_en: 'No-kids zones should NOT be allowed',
+    posB_hint: '아동 차별 · 공공 공간 접근권 · 아이들의 사회적 경험 측면에서 생각해보세요.',
+    hint_template: 'No-kids zones should [be allowed / not be allowed] because ...',
+  },
+  {
+    id: 'plastic-responsibility',
+    icon: '♻️🏭',
+    title: '플라스틱 책임',
+    subtitle: 'Individual vs. Corporate',
+    question: '플라스틱 오염의 책임은 소비자와 기업 중 누구에게 더 큰가?',
+    context: '지문(21·37번): 미래 세대를 위한 "Good Ancestor"의 책임 & 플라스틱 산업이 오염 책임을 소비자에게 전가한 역사를 바탕으로 토론해봅시다.',
+    posA_kr: '소비자 — 개인의 책임이 더 크다',
+    posA_en: 'Consumers bear greater responsibility',
+    posA_hint: '개인의 소비 선택 · 분리수거 · 생활 습관 변화가 미치는 영향을 생각해보세요.',
+    posB_kr: '기업 — 기업의 책임이 더 크다',
+    posB_en: 'Corporations bear greater responsibility',
+    posB_hint: '기업의 대량 생산 · 그린워싱 · 재활용 책임 전가 역사를 생각해보세요.',
+    hint_template: 'I believe [consumers / corporations] bear greater responsibility for plastic pollution because ...',
+  },
+  {
+    id: 'unjust-rules',
+    icon: '⚖️✊',
+    title: '악법 준수',
+    subtitle: 'Should We Follow Unjust Rules?',
+    question: '부당한 규칙이라도 집단의 질서를 위해 따라야 하는가?',
+    context: '지문(23·34번): 청소년기의 순응(conformity)이 절정에 달했다가 줄어드는 과정 & 집단 규범에 순응하는 인간의 본성을 바탕으로 토론해봅시다.',
+    posA_kr: '찬성 — 따라야 한다',
+    posA_en: 'We SHOULD follow unjust rules',
+    posA_hint: '사회 질서 · 민주적 절차를 통한 변화 · 무질서의 위험성을 생각해보세요.',
+    posB_kr: '반대 — 저항해야 한다',
+    posB_en: 'We should RESIST unjust rules',
+    posB_hint: '역사적 시민불복종 · 흑인 민권운동 · 여성 참정권 운동 사례를 생각해보세요.',
+    hint_template: 'I believe we should [follow / resist] unjust rules because ...',
+  },
+  {
+    id: 'minorities-patience',
+    icon: '🕐💪',
+    title: '인내 vs 행동',
+    subtitle: 'Patience or Immediate Action?',
+    question: '사회적 소수자는 인내하며 기다려야 할까, 즉각적으로 행동해야 할까?',
+    context: '지문(41·42번): 인내는 수동적 체념이지만, 빠른 세상에서 "천천히 갈 수 있는 능력" 자체가 권력이 된다는 역설을 바탕으로 소수자 문제와 연결지어 토론해봅시다.',
+    posA_kr: 'A — 인내가 진정한 힘이다',
+    posA_en: 'Patience is true power for minorities',
+    posA_hint: '감정적 대응 자제 · 논리적 설득 · 장기적 변화의 힘을 생각해보세요.',
+    posB_kr: 'B — 즉각적인 집단 행동이 필요하다',
+    posB_en: 'Immediate collective action is necessary',
+    posB_hint: '"Justice too long delayed is justice denied" — 인내는 기득권의 특권임을 생각해보세요.',
+    hint_template: 'I think minorities should [be patient / take immediate action] because ...',
+  },
+];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let apiKey = '';
+let selectedTopic = null;
+let selectedPosition = null; // 'A' or 'B'
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+function init() {
+  // Build topic cards
+  const grid = document.getElementById('topic-grid');
+  TOPICS.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.id = 'tc-' + t.id;
+    card.innerHTML = `
+      <div class="tc-icon">${t.icon}</div>
+      <div class="tc-title">${t.title}</div>
+      <div class="tc-sub">${t.subtitle}</div>
+    `;
+    card.onclick = () => selectTopic(t.id);
+    grid.appendChild(card);
+  });
+
+  // Writing textarea char count
+  document.getElementById('writing-input').addEventListener('input', function() {
+    document.getElementById('char-count').textContent = this.value.length;
+  });
+}
+
+/* ════════════════════════════════════════
+   API KEY
+════════════════════════════════════════ */
+function saveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
+    alert('올바른 API 키를 입력해주세요. (sk-ant- 로 시작)');
+    return;
+  }
+  apiKey = val;
+  document.getElementById('setup-overlay').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  init();
+}
+
+// Allow Enter key in API input
+document.getElementById('api-key-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveApiKey();
+});
+
+/* ════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════ */
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step' + i);
+    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  });
+}
+
+function goToTopics() {
+  selectedTopic = null;
+  selectedPosition = null;
+  document.getElementById('topic-section').classList.remove('hidden');
+  document.getElementById('debate-panel').classList.add('hidden');
+  document.getElementById('feedback-panel').classList.add('hidden');
+  document.getElementById('writing-input').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('selected'));
+  setStep(1);
+}
+
+function goToWrite() {
+  document.getElementById('feedback-panel').classList.add('hidden');
+  document.getElementById('debate-panel').classList.remove('hidden');
+  document.getElementById('error-box').classList.add('hidden');
+  setStep(2);
+}
+
+/* ════════════════════════════════════════
+   TOPIC SELECTION
+════════════════════════════════════════ */
+function selectTopic(id) {
+  selectedTopic = TOPICS.find(t => t.id === id);
+  selectedPosition = null;
+
+  document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('tc-' + id).classList.add('selected');
+
+  // Populate debate panel
+  document.getElementById('topic-header').innerHTML = `
+    <div class="th-label">토론 주제</div>
+    <div class="th-question">${selectedTopic.question}</div>
+    <div class="th-context">${selectedTopic.context}</div>
+  `;
+
+  const pg = document.getElementById('position-grid');
+  pg.innerHTML = `
+    <div class="position-btn" id="pos-A" onclick="selectPosition('A')">
+      <div class="pb-badge">입장 A</div>
+      <div class="pb-kr">${selectedTopic.posA_kr}</div>
+      <div class="pb-en">${selectedTopic.posA_en}</div>
+      <div style="font-size:.75rem;color:var(--gray-500);margin-top:8px">${selectedTopic.posA_hint}</div>
+    </div>
+    <div class="position-btn" id="pos-B" onclick="selectPosition('B')">
+      <div class="pb-badge">입장 B</div>
+      <div class="pb-kr">${selectedTopic.posB_kr}</div>
+      <div class="pb-en">${selectedTopic.posB_en}</div>
+      <div style="font-size:.75rem;color:var(--gray-500);margin-top:8px">${selectedTopic.posB_hint}</div>
+    </div>
+  `;
+
+  document.getElementById('writing-hint').innerHTML = `
+    <strong>✍️ 힌트:</strong> ${selectedTopic.hint_template}
+  `;
+
+  document.getElementById('topic-section').classList.add('hidden');
+  document.getElementById('debate-panel').classList.remove('hidden');
+  document.getElementById('feedback-panel').classList.add('hidden');
+  setStep(2);
+}
+
+/* ════════════════════════════════════════
+   POSITION SELECTION
+════════════════════════════════════════ */
+function selectPosition(pos) {
+  selectedPosition = pos;
+  const btnA = document.getElementById('pos-A');
+  const btnB = document.getElementById('pos-B');
+  btnA.className = 'position-btn' + (pos === 'A' ? ' selected-a' : '');
+  btnB.className = 'position-btn' + (pos === 'B' ? ' selected-b' : '');
+}
+
+/* ════════════════════════════════════════
+   SUBMIT
+════════════════════════════════════════ */
+async function submitDebate() {
+  const studentId = document.getElementById('student-id').value.trim();
+  const studentName = document.getElementById('student-name').value.trim();
+  const text = document.getElementById('writing-input').value.trim();
+  const errBox = document.getElementById('error-box');
+
+  errBox.classList.add('hidden');
+
+  if (!studentId || !studentName) {
+    showError('학번과 이름을 입력해주세요.');
+    return;
+  }
+  if (!selectedPosition) {
+    showError('먼저 입장(A 또는 B)을 선택해주세요.');
+    return;
+  }
+  if (text.length < 10) {
+    showError('영어 문장을 좀 더 길게 작성해주세요. (최소 10자)');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const feedback = await getFeedback(text);
+    displayFeedback(text, feedback);
+    setStep(3);
+  } catch (err) {
+    showError('피드백을 가져오는 중 오류가 발생했습니다: ' + err.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function showError(msg) {
+  const b = document.getElementById('error-box');
+  b.textContent = '⚠️ ' + msg;
+  b.classList.remove('hidden');
+}
+
+function setLoading(loading) {
+  const btn = document.getElementById('submit-btn');
+  const label = document.getElementById('submit-label');
+  const spinner = document.getElementById('submit-spinner');
+  btn.disabled = loading;
+  if (loading) {
+    label.textContent = 'AI가 분석 중...';
+    spinner.classList.remove('hidden');
+  } else {
+    label.textContent = '제출하고 피드백 받기';
+    spinner.classList.add('hidden');
+  }
+}
+
+/* ════════════════════════════════════════
+   CLAUDE API CALL
+════════════════════════════════════════ */
+async function getFeedback(text) {
+  const posKr = selectedPosition === 'A' ? selectedTopic.posA_kr : selectedTopic.posB_kr;
+  const posEn = selectedPosition === 'A' ? selectedTopic.posA_en : selectedTopic.posB_en;
+
+  const prompt = `당신은 한국 고등학교 1학년 영어 선생님입니다. 학생이 영어 토론 활동에서 작성한 문장을 평가해주세요.
+
+[토론 주제] ${selectedTopic.question}
+[학생의 입장] ${posKr} (${posEn})
+[학생이 쓴 문장] "${text}"
+
+다음 JSON 형식으로 정확하게 응답해주세요. JSON 외의 다른 텍스트는 절대 포함하지 마세요:
+
+{
+  "logic": {
+    "score": 점수(1~5 정수),
+    "feedback": "논리성에 대한 한국어 피드백 (주장이 명확한지, 입장과 일치하는지, 근거가 충분한지 평가. 2~3문장)"
+  },
+  "grammar": {
+    "score": 점수(1~5 정수),
+    "errors": ["발견된 문법 오류 1 (오류→수정)", "발견된 문법 오류 2"],
+    "feedback": "어법에 대한 한국어 피드백. 오류가 없으면 잘된 점을 언급. (1~2문장)"
+  },
+  "vocabulary": {
+    "score": 점수(1~5 정수),
+    "suggestions": ["더 나은 표현 제안 1 (기존→대안)", "더 나은 표현 제안 2"],
+    "feedback": "어휘 선택에 대한 한국어 피드백. (1~2문장)"
+  },
+  "improved": ["개선된 문장 예시 1 (영어)", "개선된 문장 예시 2 (영어, 다른 스타일)"]
+}
+
+점수 기준: 5=매우 우수, 4=우수, 3=보통, 2=미흡, 1=많은 개선 필요
+피드백은 고1 수준에 맞게 친근하고 구체적으로 작성해주세요.`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  const raw = data.content[0].text.trim();
+
+  // Extract JSON (handle possible code fences)
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('AI 응답을 파싱할 수 없습니다.');
+  return JSON.parse(jsonMatch[0]);
+}
+
+/* ════════════════════════════════════════
+   DISPLAY FEEDBACK
+════════════════════════════════════════ */
+function displayFeedback(text, fb) {
+  document.getElementById('display-submitted').textContent = text;
+
+  const scoreLabel = s => {
+    if (s >= 5) return '⭐ 매우 우수';
+    if (s >= 4) return '⭐ 우수';
+    if (s >= 3) return '🟡 보통';
+    if (s >= 2) return '🔴 미흡';
+    return '🔴 개선 필요';
+  };
+
+  const cards = [
+    {
+      icon: '🧠',
+      label: '논리성 (Logic)',
+      score: fb.logic.score,
+      bodyHtml: `<p>${fb.logic.feedback}</p>`,
+    },
+    {
+      icon: '📝',
+      label: '어법 (Grammar)',
+      score: fb.grammar.score,
+      bodyHtml: (() => {
+        let h = '';
+        if (fb.grammar.errors && fb.grammar.errors.length > 0) {
+          h += '<ul>' + fb.grammar.errors.map(e => `<li>${e}</li>`).join('') + '</ul><br>';
+        }
+        h += `<p>${fb.grammar.feedback}</p>`;
+        return h;
+      })(),
+    },
+    {
+      icon: '📖',
+      label: '어휘 (Vocabulary)',
+      score: fb.vocabulary.score,
+      bodyHtml: (() => {
+        let h = '';
+        if (fb.vocabulary.suggestions && fb.vocabulary.suggestions.length > 0) {
+          h += '<ul>' + fb.vocabulary.suggestions.map(s => `<li>${s}</li>`).join('') + '</ul><br>';
+        }
+        h += `<p>${fb.vocabulary.feedback}</p>`;
+        return h;
+      })(),
+    },
+  ];
+
+  const grid = document.getElementById('feedback-grid');
+  grid.innerHTML = cards.map(c => `
+    <div class="fb-card">
+      <div class="fc-head">
+        <span class="fc-icon">${c.icon}</span>
+        <span class="fc-label">${c.label}</span>
+        <span class="fc-score score-${c.score}">${scoreLabel(c.score)}</span>
+      </div>
+      <div class="fc-body">${c.bodyHtml}</div>
+    </div>
+  `).join('');
+
+  // Improved sentences
+  const improved = fb.improved || [];
+  document.getElementById('improved-text').innerHTML =
+    improved.map((s, i) => `<p>${i + 1}. "${s}"</p>`).join('') ||
+    '<p>개선된 예시를 생성하지 못했습니다.</p>';
+
+  document.getElementById('debate-panel').classList.add('hidden');
+  document.getElementById('feedback-panel').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

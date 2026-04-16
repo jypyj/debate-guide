@@ -31,7 +31,6 @@ body {
   font-size: 15px;
 }
 
-/* ── 헤더 ── */
 .site-header {
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
   color: #fff;
@@ -41,10 +40,8 @@ body {
 .site-header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.5px; }
 .site-header p { margin-top: 6px; opacity: .8; font-size: .88rem; }
 
-/* ── 컨테이너 ── */
 .container { max-width: 640px; margin: 0 auto; padding: 20px 16px 40px; }
 
-/* ── 카드 ── */
 .card {
   background: #fff;
   border-radius: var(--radius);
@@ -80,7 +77,7 @@ body {
 }
 
 /* ── 입력 ── */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 12px; }
 .form-group { margin-bottom: 12px; }
 .form-group:last-child { margin-bottom: 0; }
 .form-group label {
@@ -137,6 +134,26 @@ body {
 }
 .selected-topic.show { display: block; }
 .selected-topic .label { font-size: .75rem; font-weight: 400; color: var(--gray600); display: block; margin-bottom: 4px; }
+
+/* ── 입장 선택 ── */
+.position-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+.position-btn {
+  border: 2px solid var(--gray200);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .18s;
+  user-select: none;
+}
+.position-btn:hover { transform: translateY(-1px); }
+.position-btn .pos-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.position-btn .pos-label { font-weight: 800; font-size: 1rem; }
+.position-btn .pos-sub { font-size: .78rem; color: var(--gray400); margin-top: 2px; }
+.pos-agree { border-color: var(--green) !important; background: #f0fdf4; }
+.pos-agree .pos-label { color: var(--green); }
+.pos-disagree { border-color: var(--red) !important; background: #fff5f5; }
+.pos-disagree .pos-label { color: var(--red); }
 
 /* ── 버튼 ── */
 .btn {
@@ -204,17 +221,16 @@ body {
 }
 .result .btn-reset { margin-top: 24px; width: auto; display: inline-block; padding: 12px 32px; }
 
-/* ── 에러 ── */
 .error-msg {
   color: var(--red);
   font-size: .78rem;
   margin-top: 8px;
+  margin-bottom: 8px;
   display: none;
   text-align: center;
 }
 .error-msg.show { display: block; }
 
-/* ── 토스트 ── */
 .toast {
   position: fixed; top: 18px; right: 18px;
   background: var(--green); color: #fff;
@@ -226,10 +242,9 @@ body {
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* ── 반응형 ── */
 @media (max-width: 600px) {
   .topic-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr 1fr 2fr; }
   .site-header h1 { font-size: 1.3rem; }
 }
 
@@ -248,7 +263,6 @@ body {
 
 <div class="toast" id="toast">제출 완료!</div>
 
-<!-- 헤더 -->
 <header class="site-header">
   <h1>토론 주제 선택</h1>
   <p>2026 1학기 공통영어1 수행평가</p>
@@ -256,25 +270,15 @@ body {
 
 <div class="container">
 
-  <!-- 폼 영역 -->
   <div id="formArea">
 
-    <!-- 학생 정보 -->
+    <!-- STEP 1: 학생 정보 -->
     <div class="card">
       <div class="card-title">
         <span class="num">STEP 1</span>
         학생 정보 입력
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label for="grade">학년</label>
-          <select id="grade">
-            <option value="">선택</option>
-            <option value="1">1학년</option>
-            <option value="2">2학년</option>
-            <option value="3">3학년</option>
-          </select>
-        </div>
         <div class="form-group">
           <label for="classNum">반</label>
           <select id="classNum">
@@ -288,8 +292,6 @@ body {
             <option value="7">7반</option>
           </select>
         </div>
-      </div>
-      <div class="form-row">
         <div class="form-group">
           <label for="number">번호</label>
           <input type="text" id="number" placeholder="예: 15" inputmode="numeric" maxlength="3">
@@ -301,13 +303,13 @@ body {
       </div>
     </div>
 
-    <!-- 주제 선택 -->
+    <!-- STEP 2: 주제 선택 -->
     <div class="card">
       <div class="card-title">
         <span class="num">STEP 2</span>
         토론 주제 선택
       </div>
-      <p class="card-desc">아래 목록에서 토론하고 싶은 주제를 하나 선택하세요. 목록에 없는 주제를 원하면 아래에 직접 입력할 수도 있습니다.</p>
+      <p class="card-desc">토론하고 싶은 주제를 하나 선택하세요. 목록에 없으면 아래에 직접 입력할 수도 있습니다.</p>
 
       <div class="topic-grid">
         <div class="topic-cat">
@@ -365,6 +367,28 @@ body {
       </div>
     </div>
 
+    <!-- STEP 3: 입장 선택 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num">STEP 3</span>
+        나의 입장 선택
+      </div>
+      <p class="card-desc">선택한 주제에 대한 나의 입장을 골라주세요. 같은 주제를 선택한 친구들과 찬성/반대가 골고루 섞여 조가 편성됩니다.</p>
+
+      <div class="position-row">
+        <div class="position-btn" id="btnAgree" onclick="setPosition('agree')">
+          <div class="pos-icon">&#x1F44D;</div>
+          <div class="pos-label">Agree</div>
+          <div class="pos-sub">찬성</div>
+        </div>
+        <div class="position-btn" id="btnDisagree" onclick="setPosition('disagree')">
+          <div class="pos-icon">&#x1F44E;</div>
+          <div class="pos-label">Disagree</div>
+          <div class="pos-sub">반대</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 제출 -->
     <div class="error-msg" id="errorMsg"></div>
     <button class="btn btn-submit" id="btnSubmit" onclick="submitForm()">제출하기</button>
@@ -379,7 +403,7 @@ body {
     </div>
     <h2>제출 완료!</h2>
     <p>토론 주제 선택이 정상적으로 제출되었습니다.</p>
-    <p style="font-size:.82rem; color:#888;">같은 반에서 같은 주제를 선택한 친구들과 자동으로 조가 편성됩니다.</p>
+    <p style="font-size:.82rem; color:#888;">같은 주제를 선택한 친구들과 찬성/반대가 골고루 섞여 조가 편성됩니다.</p>
     <div class="info-box" id="resultInfo"></div>
     <br>
     <button class="btn btn-reset" onclick="resetForm()">다시 제출하기</button>
@@ -391,15 +415,16 @@ body {
 // ★★ Apps Script 배포 URL을 여기에 입력하세요 ★★
 const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
-/* ── 주제 선택 이벤트 ── */
+let selectedPosition = '';
+
+/* ── 주제 선택 ── */
 function onTopicChange() {
   document.getElementById('customTopic').value = '';
   updateSelectedDisplay();
 }
 
 function onCustomInput() {
-  const custom = document.getElementById('customTopic').value.trim();
-  if (custom) {
+  if (document.getElementById('customTopic').value.trim()) {
     document.querySelectorAll('input[name=topic]').forEach(r => r.checked = false);
   }
   updateSelectedDisplay();
@@ -420,25 +445,29 @@ function updateSelectedDisplay() {
 function getSelectedTopic() {
   const radio = document.querySelector('input[name=topic]:checked');
   if (radio) return radio.value;
-  const custom = document.getElementById('customTopic').value.trim();
-  return custom || '';
+  return document.getElementById('customTopic').value.trim();
+}
+
+/* ── 입장 선택 ── */
+function setPosition(pos) {
+  selectedPosition = pos;
+  document.getElementById('btnAgree').className = 'position-btn' + (pos === 'agree' ? ' pos-agree' : '');
+  document.getElementById('btnDisagree').className = 'position-btn' + (pos === 'disagree' ? ' pos-disagree' : '');
 }
 
 /* ── 제출 ── */
 async function submitForm() {
-  const grade = document.getElementById('grade').value;
   const classNum = document.getElementById('classNum').value;
   const number = document.getElementById('number').value.trim();
   const name = document.getElementById('sname').value.trim();
   const topic = getSelectedTopic();
 
-  // 유효성 검사
   const missing = [];
-  if (!grade) missing.push('학년');
   if (!classNum) missing.push('반');
   if (!number) missing.push('번호');
   if (!name) missing.push('이름');
   if (!topic) missing.push('토론 주제');
+  if (!selectedPosition) missing.push('입장(찬성/반대)');
 
   const errEl = document.getElementById('errorMsg');
   if (missing.length) {
@@ -454,11 +483,11 @@ async function submitForm() {
 
   const data = {
     timestamp: new Date().toLocaleString('ko-KR'),
-    grade: grade,
     classNum: classNum,
     number: number,
     name: name,
-    topic: topic
+    topic: topic,
+    position: selectedPosition
   };
 
   try {
@@ -476,13 +505,12 @@ async function submitForm() {
       body: JSON.stringify(data)
     });
 
-    // 결과 표시
+    const posLabel = selectedPosition === 'agree' ? 'Agree (찬성)' : 'Disagree (반대)';
     document.getElementById('resultInfo').innerHTML =
-      `${grade}학년 ${classNum}반 ${number}번 ${name}<br>주제: ${topic}`;
+      `${classNum}반 ${number}번 ${name}<br>주제: ${topic}<br>입장: ${posLabel}`;
     document.getElementById('formArea').style.display = 'none';
     document.getElementById('resultArea').classList.add('show');
 
-    // 토스트
     const toast = document.getElementById('toast');
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2000);
@@ -497,7 +525,6 @@ async function submitForm() {
 
 /* ── 초기화 ── */
 function resetForm() {
-  document.getElementById('grade').value = '';
   document.getElementById('classNum').value = '';
   document.getElementById('number').value = '';
   document.getElementById('sname').value = '';
@@ -507,10 +534,11 @@ function resetForm() {
   document.getElementById('errorMsg').classList.remove('show');
   document.getElementById('btnSubmit').disabled = false;
   document.getElementById('btnSubmit').textContent = '제출하기';
-
+  selectedPosition = '';
+  document.getElementById('btnAgree').className = 'position-btn';
+  document.getElementById('btnDisagree').className = 'position-btn';
   document.getElementById('formArea').style.display = 'block';
   document.getElementById('resultArea').classList.remove('show');
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>📸 클래스 포토부스</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.screen { display: none; width: 100%; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+/* Start Screen */
+#startScreen {
+  justify-content: center;
+  gap: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+#startScreen h1 {
+  font-size: 3.5rem;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+}
+#startScreen p {
+  font-size: 1.4rem;
+  opacity: 0.9;
+}
+.btn-start {
+  padding: 24px 64px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 60px;
+  background: #fff;
+  color: #764ba2;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.btn-start:hover { transform: scale(1.05); }
+.btn-start:active { transform: scale(0.98); }
+
+/* Camera Screen */
+#cameraScreen {
+  background: #0f0f23;
+  padding: 20px;
+  gap: 20px;
+}
+.camera-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 1.3rem;
+}
+.photo-counter {
+  background: rgba(255,255,255,0.15);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+.camera-container {
+  position: relative;
+  width: 640px;
+  max-width: 90vw;
+  aspect-ratio: 4/3;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+#video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+.frame-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 8px solid rgba(255,255,255,0.6);
+  border-radius: 16px;
+  pointer-events: none;
+}
+.frame-overlay::before, .frame-overlay::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #fff;
+}
+.frame-overlay::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+.frame-overlay::after { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+.countdown-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(0,0,0,0.8);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.countdown-overlay.visible { opacity: 1; }
+.flash-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+.flash-overlay.flash { opacity: 1; }
+
+.btn-capture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  background: #ff4757;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 20px rgba(255,71,87,0.4);
+}
+.btn-capture:hover { transform: scale(1.1); background: #ff6b81; }
+.btn-capture:active { transform: scale(0.9); }
+.btn-capture:disabled { background: #555; border-color: #777; cursor: not-allowed; }
+
+.thumbnails {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+}
+.thumbnail {
+  width: 70px;
+  height: 53px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.3);
+  transform: scaleX(-1);
+}
+.btn-done {
+  padding: 14px 40px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 30px;
+  background: #00d2d3;
+  color: #0f0f23;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-done:hover { transform: scale(1.05); }
+.auto-progress {
+  width: 640px;
+  max-width: 90vw;
+  height: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.auto-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00d2d3, #feca57);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+/* Select Screen */
+#selectScreen {
+  background: linear-gradient(180deg, #0f0f23 0%, #1a1a3e 100%);
+  padding: 30px;
+  gap: 24px;
+}
+#selectScreen h2 { font-size: 2rem; }
+#selectScreen p { font-size: 1.1rem; opacity: 0.8; }
+.select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  max-width: 900px;
+  width: 100%;
+}
+.select-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 4px solid transparent;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.select-item img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  transform: scaleX(-1);
+}
+.select-item.selected { border-color: #feca57; transform: scale(1.03); }
+.select-item .select-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #feca57;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.select-item.selected .select-badge { opacity: 1; }
+
+.btn-compose {
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-compose:hover { transform: scale(1.05); }
+.btn-compose:disabled { background: #555; color: #888; cursor: not-allowed; }
+
+/* Frame Selection Screen */
+#frameSelectScreen {
+  background: linear-gradient(180deg, #1a1a3e 0%, #2d1b69 100%);
+  padding: 30px;
+  gap: 24px;
+}
+#frameSelectScreen h2 { font-size: 2rem; }
+.frame-select-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 1100px;
+}
+.frame-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  min-width: 300px;
+}
+.frame-preview-wrap {
+  max-width: 350px;
+  width: 100%;
+  position: sticky;
+  top: 30px;
+}
+#previewCanvas {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+
+/* Result Screen */
+#resultScreen {
+  background: linear-gradient(180deg, #1a1a3e 0%, #16213e 100%);
+  padding: 30px;
+  gap: 24px;
+}
+#resultScreen h2 { font-size: 2rem; }
+.result-container {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.result-image-wrap {
+  max-width: 400px;
+  width: 100%;
+}
+#resultCanvas {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+.qr-section {
+  text-align: center;
+}
+.qr-section p {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+#qrImage {
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px;
+}
+.btn-download {
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 30px;
+  background: #00d2d3;
+  color: #0f0f23;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-download:hover { transform: scale(1.05); }
+.btn-retry {
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-retry:hover { transform: scale(1.05); }
+
+/* Upload status */
+.upload-status {
+  text-align: center;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+.upload-status.uploading {
+  background: rgba(255,255,255,0.1);
+  color: #feca57;
+}
+.upload-status.success {
+  background: rgba(0,210,211,0.15);
+  color: #00d2d3;
+}
+.upload-status.error {
+  background: rgba(255,71,87,0.15);
+  color: #ff4757;
+}
+
+/* Decoration select */
+.deco-section { text-align: center; margin-top: 8px; }
+.deco-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+.deco-btn {
+  padding: 8px 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.deco-btn:hover { border-color: #feca57; }
+.deco-btn.selected { border-color: #feca57; background: rgba(254,202,87,0.2); }
+
+/* Title Input */
+.title-input-section {
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+.title-input-section input {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+}
+.title-input-section input:focus { border-color: #feca57; }
+.title-input-section input::placeholder { color: rgba(255,255,255,0.4); }
+
+
+@media (max-width: 768px) {
+  #startScreen h1 { font-size: 2.2rem; }
+  .camera-container { width: 100%; }
+  .select-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .result-container { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+
+<!-- Start Screen -->
+<div id="startScreen" class="screen active">
+  <h1>📸 클래스 포토부스</h1>
+  <p>인생네컷 스타일로 추억을 남겨보세요!</p>
+  <button class="btn-start" onclick="startCamera()">시작하기</button>
+</div>
+
+<!-- Camera Screen -->
+<div id="cameraScreen" class="screen">
+  <div class="camera-header">
+    <span class="photo-counter">📷 <span id="photoCount">0</span> / 8</span>
+    <span id="cameraStatus">준비 중...</span>
+  </div>
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
+    <div class="frame-overlay"></div>
+    <div class="countdown-overlay" id="countdown"></div>
+    <div class="flash-overlay" id="flash"></div>
+  </div>
+  <div class="auto-progress">
+    <div class="auto-progress-bar" id="progressBar"></div>
+  </div>
+  <div class="thumbnails" id="thumbnails"></div>
+  <button class="btn-done" id="doneBtn" style="display:none;" onclick="goToSelect()">촬영 완료 → 사진 선택하기</button>
+</div>
+
+<!-- Select Screen -->
+<div id="selectScreen" class="screen">
+  <h2>🖼️ 4장을 골라주세요</h2>
+  <p>마음에 드는 사진 4장을 순서대로 선택하세요</p>
+  <div class="select-grid" id="selectGrid"></div>
+  <button class="btn-compose" id="composeBtn" disabled onclick="goToFrameSelect()">다음 단계 →</button>
+</div>
+
+<!-- Frame / Decoration Select -->
+<div id="frameSelectScreen" class="screen">
+  <h2>🎨 프레임과 제목을 선택하세요</h2>
+
+  <div class="frame-select-layout">
+    <div class="frame-controls">
+      <div class="title-input-section">
+        <input type="text" id="titleInput" placeholder="제목을 입력하세요 (예: 1학년 3반)" maxlength="20" oninput="updatePreview()">
+      </div>
+
+      <div class="deco-section">
+        <p>배경 색상</p>
+        <div class="deco-options" id="bgOptions">
+          <button class="deco-btn selected" data-bg="#ffffff" onclick="selectBg(this)">⬜ 화이트</button>
+          <button class="deco-btn" data-bg="#000000" onclick="selectBg(this)">⬛ 블랙</button>
+          <button class="deco-btn" data-bg="#fff0f5" onclick="selectBg(this)">🩷 핑크</button>
+          <button class="deco-btn" data-bg="#f0f8ff" onclick="selectBg(this)">💙 블루</button>
+          <button class="deco-btn" data-bg="#fffff0" onclick="selectBg(this)">💛 옐로우</button>
+          <button class="deco-btn" data-bg="#f5fff5" onclick="selectBg(this)">💚 그린</button>
+        </div>
+      </div>
+
+      <div class="deco-section">
+        <p>레이아웃</p>
+        <div class="deco-options">
+          <button class="deco-btn selected" data-layout="vertical" onclick="selectLayout(this)">세로 1열</button>
+          <button class="deco-btn" data-layout="grid" onclick="selectLayout(this)">2x2 격자</button>
+        </div>
+      </div>
+
+      <button class="btn-compose" onclick="composePhoto()">완성하기 ✨</button>
+    </div>
+
+    <div class="frame-preview-wrap">
+      <p style="opacity:0.7; margin-bottom:12px; text-align:center;">미리보기</p>
+      <canvas id="previewCanvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Result Screen -->
+<div id="resultScreen" class="screen">
+  <h2>✨ 완성!</h2>
+  <div class="result-container">
+    <div class="result-image-wrap">
+      <canvas id="resultCanvas"></canvas>
+    </div>
+    <div class="result-actions">
+      <div id="uploadStatus"></div>
+      <div class="qr-section" id="qrSection" style="display:none;">
+        <p>📱 QR코드를 스캔해서 다운로드하세요</p>
+        <img id="qrImage" width="200" height="200" style="border-radius:12px;">
+      </div>
+      <button class="btn-download" onclick="downloadPhoto()">💾 이 기기에 저장</button>
+      <button class="btn-retry" onclick="resetAll()">🔄 처음부터 다시</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+<script>
+// ============ 설정 ============
+// ↓↓↓ 여기에 Apps Script 배포 URL을 붙여넣으세요 ↓↓↓
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-yT5mpSMwnhmkxyWFWZG6aWU24bBgMn_LzVvBMMLOXpp7iCBsSbviS68n-qkGcq22/exec';
+// ↑↑↑ 예: 'https://script.google.com/macros/s/AKfycbx-yT5mpSMwnhmkxyWFWZG6aWU24bBgMn_LzVvBMMLOXpp7iCBsSbviS68n-qkGcq22/exec' ↑↑↑
+
+let stream = null;
+let photos = [];
+let selectedPhotos = [];
+let selectedBg = '#ffffff';
+let selectedLayout = 'vertical';
+let autoTimer = null;
+let progressTimer = null;
+
+const TOTAL_SHOTS = 8;
+const INTERVAL_SEC = 5;
+
+// ============ 화면 전환 ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============ 카메라 ============
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } },
+      audio: false
+    });
+    document.getElementById('video').srcObject = stream;
+    showScreen('cameraScreen');
+    startAutoCapture();
+  } catch (err) {
+    alert('카메라에 접근할 수 없습니다. 카메라 권한을 허용해주세요.');
+  }
+}
+
+function startAutoCapture() {
+  photos = [];
+  updateCameraUI();
+  scheduleNextShot();
+}
+
+function scheduleNextShot() {
+  if (photos.length >= TOTAL_SHOTS) {
+    finishCapture();
+    return;
+  }
+
+  const shotNum = photos.length + 1;
+  document.getElementById('cameraStatus').textContent = `${shotNum}번째 사진 촬영까지...`;
+
+  let elapsed = 0;
+  const progressBar = document.getElementById('progressBar');
+  progressBar.style.width = '0%';
+
+  progressTimer = setInterval(() => {
+    elapsed += 100;
+    const pct = (elapsed / (INTERVAL_SEC * 1000)) * 100;
+    progressBar.style.width = pct + '%';
+  }, 100);
+
+  // 마지막 3초부터 카운트다운 표시
+  const countdownDelay = (INTERVAL_SEC - 3) * 1000;
+  autoTimer = setTimeout(() => {
+    showCountdownThenCapture();
+  }, countdownDelay);
+}
+
+function showCountdownThenCapture() {
+  const overlay = document.getElementById('countdown');
+  let count = 3;
+  overlay.textContent = count;
+  overlay.classList.add('visible');
+
+  const timer = setInterval(() => {
+    count--;
+    if (count > 0) {
+      overlay.textContent = count;
+    } else {
+      clearInterval(timer);
+      overlay.classList.remove('visible');
+      clearInterval(progressTimer);
+      document.getElementById('progressBar').style.width = '100%';
+      capturePhoto();
+      setTimeout(() => scheduleNextShot(), 500);
+    }
+  }, 1000);
+}
+
+function capturePhoto() {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('hiddenCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  photos.push(dataUrl);
+
+  const flash = document.getElementById('flash');
+  flash.classList.add('flash');
+  setTimeout(() => flash.classList.remove('flash'), 150);
+
+  updateCameraUI();
+}
+
+function updateCameraUI() {
+  document.getElementById('photoCount').textContent = photos.length;
+
+  const thumbs = document.getElementById('thumbnails');
+  thumbs.innerHTML = '';
+  photos.forEach((p) => {
+    const img = document.createElement('img');
+    img.src = p;
+    img.className = 'thumbnail';
+    thumbs.appendChild(img);
+  });
+}
+
+function finishCapture() {
+  clearInterval(progressTimer);
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('cameraStatus').textContent = '촬영 완료! 아래 버튼을 눌러주세요';
+  document.getElementById('doneBtn').style.display = 'block';
+}
+
+// ============ 사진 선택 ============
+function goToSelect() {
+  showScreen('selectScreen');
+  const grid = document.getElementById('selectGrid');
+  grid.innerHTML = '';
+  selectedPhotos = [];
+
+  photos.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'select-item';
+    item.innerHTML = `<img src="${p}"><div class="select-badge"></div>`;
+    item.onclick = () => toggleSelect(item, i);
+    grid.appendChild(item);
+  });
+
+  updateComposeBtn();
+}
+
+function toggleSelect(item, index) {
+  const idx = selectedPhotos.indexOf(index);
+  if (idx > -1) {
+    selectedPhotos.splice(idx, 1);
+  } else if (selectedPhotos.length < 4) {
+    selectedPhotos.push(index);
+  }
+
+  document.querySelectorAll('.select-item').forEach(el => {
+    el.querySelector('.select-badge').textContent = '';
+    el.classList.remove('selected');
+  });
+  selectedPhotos.forEach((photoIdx, order) => {
+    const items = document.querySelectorAll('.select-item');
+    items[photoIdx].classList.add('selected');
+    items[photoIdx].querySelector('.select-badge').textContent = order + 1;
+  });
+
+  updateComposeBtn();
+}
+
+function updateComposeBtn() {
+  document.getElementById('composeBtn').disabled = selectedPhotos.length !== 4;
+}
+
+// ============ 프레임 선택 ============
+function goToFrameSelect() {
+  showScreen('frameSelectScreen');
+  preloadSelectedImages().then(() => updatePreview());
+}
+
+let preloadedImgs = [];
+function preloadSelectedImages() {
+  return new Promise((resolve) => {
+    preloadedImgs = [];
+    let loaded = 0;
+    selectedPhotos.forEach((photoIdx, i) => {
+      const img = new Image();
+      img.onload = () => {
+        preloadedImgs[i] = img;
+        loaded++;
+        if (loaded === 4) resolve();
+      };
+      img.src = photos[photoIdx];
+    });
+  });
+}
+
+function selectBg(btn) {
+  document.querySelectorAll('#bgOptions .deco-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedBg = btn.dataset.bg;
+  updatePreview();
+}
+
+function selectLayout(btn) {
+  btn.parentElement.querySelectorAll('.deco-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedLayout = btn.dataset.layout;
+  updatePreview();
+}
+
+function updatePreview() {
+  if (preloadedImgs.length < 4) return;
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  const title = document.getElementById('titleInput').value || '클래스 포토부스';
+
+  const padding = 40;
+  const photoGap = 20;
+  const titleHeight = 80;
+  const bottomHeight = 60;
+  const photoWidth = 400;
+  const photoHeight = 300;
+
+  if (selectedLayout === 'vertical') {
+    canvas.width = photoWidth + padding * 2;
+    canvas.height = titleHeight + (photoHeight + photoGap) * 4 - photoGap + padding * 2 + bottomHeight;
+  } else {
+    canvas.width = (photoWidth * 2) + photoGap + padding * 2;
+    canvas.height = titleHeight + (photoHeight * 2) + photoGap + padding * 2 + bottomHeight;
+  }
+
+  ctx.fillStyle = selectedBg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const textColor = selectedBg === '#000000' ? '#ffffff' : '#333333';
+  ctx.fillStyle = textColor;
+  ctx.font = 'bold 28px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, canvas.width / 2, padding + 45);
+
+  preloadedImgs.forEach((img, i) => {
+    let x, y;
+    if (selectedLayout === 'vertical') {
+      x = padding;
+      y = titleHeight + padding + i * (photoHeight + photoGap);
+    } else {
+      x = padding + (i % 2) * (photoWidth + photoGap);
+      y = titleHeight + padding + Math.floor(i / 2) * (photoHeight + photoGap);
+    }
+
+    ctx.save();
+    ctx.translate(x + photoWidth, y);
+    ctx.scale(-1, 1);
+
+    const imgRatio = img.width / img.height;
+    const slotRatio = photoWidth / photoHeight;
+    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+    if (imgRatio > slotRatio) {
+      sw = img.height * slotRatio;
+      sx = (img.width - sw) / 2;
+    } else {
+      sh = img.width / slotRatio;
+      sy = (img.height - sh) / 2;
+    }
+
+    ctx.beginPath();
+    roundRect(ctx, 0, 0, photoWidth, photoHeight, 12);
+    ctx.clip();
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, photoWidth, photoHeight);
+    ctx.restore();
+
+    ctx.strokeStyle = textColor === '#ffffff' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    roundRect(ctx, x, y, photoWidth, photoHeight, 12);
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = textColor;
+  ctx.globalAlpha = 0.5;
+  ctx.font = '16px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+  ctx.fillText(dateStr, canvas.width / 2, canvas.height - 25);
+  ctx.globalAlpha = 1;
+}
+
+// ============ 사진 합성 ============
+function composePhoto() {
+  const canvas = document.getElementById('resultCanvas');
+  const ctx = canvas.getContext('2d');
+  const title = document.getElementById('titleInput').value || '클래스 포토부스';
+
+  const padding = 40;
+  const photoGap = 20;
+  const titleHeight = 80;
+  const bottomHeight = 60;
+  const photoWidth = 400;
+  const photoHeight = 300;
+
+  if (selectedLayout === 'vertical') {
+    canvas.width = photoWidth + padding * 2;
+    canvas.height = titleHeight + (photoHeight + photoGap) * 4 - photoGap + padding * 2 + bottomHeight;
+  } else {
+    canvas.width = (photoWidth * 2) + photoGap + padding * 2;
+    canvas.height = titleHeight + (photoHeight * 2) + photoGap + padding * 2 + bottomHeight;
+  }
+
+  ctx.fillStyle = selectedBg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const textColor = selectedBg === '#000000' ? '#ffffff' : '#333333';
+  ctx.fillStyle = textColor;
+  ctx.font = 'bold 28px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, canvas.width / 2, padding + 45);
+
+  const images = selectedPhotos.map(i => photos[i]);
+  let loaded = 0;
+  const imgElements = [];
+
+  images.forEach((src, i) => {
+    const img = new Image();
+    img.onload = () => {
+      loaded++;
+      imgElements[i] = img;
+      if (loaded === 4) drawPhotos(ctx, canvas, imgElements, padding, titleHeight, photoWidth, photoHeight, photoGap, bottomHeight, textColor);
+    };
+    img.src = src;
+  });
+}
+
+function drawPhotos(ctx, canvas, imgs, padding, titleHeight, photoWidth, photoHeight, photoGap, bottomHeight, textColor) {
+  imgs.forEach((img, i) => {
+    let x, y;
+    if (selectedLayout === 'vertical') {
+      x = padding;
+      y = titleHeight + padding + i * (photoHeight + photoGap);
+    } else {
+      x = padding + (i % 2) * (photoWidth + photoGap);
+      y = titleHeight + padding + Math.floor(i / 2) * (photoHeight + photoGap);
+    }
+
+    ctx.save();
+    ctx.translate(x + photoWidth, y);
+    ctx.scale(-1, 1);
+
+    const imgRatio = img.width / img.height;
+    const slotRatio = photoWidth / photoHeight;
+    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+    if (imgRatio > slotRatio) {
+      sw = img.height * slotRatio;
+      sx = (img.width - sw) / 2;
+    } else {
+      sh = img.width / slotRatio;
+      sy = (img.height - sh) / 2;
+    }
+
+    ctx.beginPath();
+    roundRect(ctx, 0, 0, photoWidth, photoHeight, 12);
+    ctx.clip();
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, photoWidth, photoHeight);
+    ctx.restore();
+
+    ctx.strokeStyle = textColor === '#ffffff' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    roundRect(ctx, x, y, photoWidth, photoHeight, 12);
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = textColor;
+  ctx.globalAlpha = 0.5;
+  ctx.font = '16px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+  ctx.fillText(dateStr, canvas.width / 2, canvas.height - 25);
+  ctx.globalAlpha = 1;
+
+  showScreen('resultScreen');
+  uploadAndGenerateQR();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+// ============ Google Drive 업로드 + QR ============
+function uploadAndGenerateQR() {
+  const statusEl = document.getElementById('uploadStatus');
+  const qrSection = document.getElementById('qrSection');
+
+  if (!APPS_SCRIPT_URL) {
+    statusEl.innerHTML = '<div class="upload-status error">⚙️ Apps Script URL이 설정되지 않았습니다.</div>';
+    qrSection.style.display = 'none';
+    return;
+  }
+
+  statusEl.innerHTML = '<div class="upload-status uploading">⏳ Google Drive에 업로드 중...</div>';
+  qrSection.style.display = 'none';
+
+  const canvas = document.getElementById('resultCanvas');
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  const base64Data = dataUrl.split(',')[1];
+
+  const today = new Date();
+  const fileName = `photobooth_${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}_${String(today.getHours()).padStart(2,'0')}${String(today.getMinutes()).padStart(2,'0')}${String(today.getSeconds()).padStart(2,'0')}.jpg`;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', APPS_SCRIPT_URL);
+  xhr.setRequestHeader('Content-Type', 'text/plain;charset=utf-8');
+  xhr.onload = function() {
+    try {
+      const result = JSON.parse(xhr.responseText);
+      if (result.success) {
+        statusEl.innerHTML = '<div class="upload-status success">✅ 업로드 완료! QR코드를 스캔하세요</div>';
+        qrSection.style.display = 'block';
+
+        const qrImg = document.getElementById('qrImage');
+        qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(result.downloadUrl);
+      } else {
+        statusEl.innerHTML = `<div class="upload-status error">❌ 업로드 실패: ${result.error}</div>`;
+      }
+    } catch (e) {
+      statusEl.innerHTML = '<div class="upload-status error">❌ 응답 처리 실패<br><small>Apps Script 배포를 다시 확인해주세요.</small></div>';
+    }
+  };
+  xhr.onerror = function() {
+    statusEl.innerHTML = '<div class="upload-status error">❌ 네트워크 오류<br><small>인터넷 연결을 확인해주세요.</small></div>';
+  };
+  xhr.send(JSON.stringify({
+    image: base64Data,
+    fileName: fileName
+  }));
+}
+
+// ============ 로컬 저장 ============
+function downloadPhoto() {
+  const canvas = document.getElementById('resultCanvas');
+  const link = document.createElement('a');
+  const today = new Date();
+  const filename = `photobooth_${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}.jpg`;
+  link.download = filename;
+  link.href = canvas.toDataURL('image/jpeg', 0.92);
+  link.click();
+}
+
+// ============ 리셋 ============
+function resetAll() {
+  photos = [];
+  selectedPhotos = [];
+  clearTimeout(autoTimer);
+  clearInterval(progressTimer);
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+  document.getElementById('thumbnails').innerHTML = '';
+  document.getElementById('photoCount').textContent = '0';
+  document.getElementById('doneBtn').style.display = 'none';
+  document.getElementById('uploadStatus').innerHTML = '';
+  document.getElementById('qrSection').style.display = 'none';
+
+  showScreen('startScreen');
+}
+
+</script>
+</body>
+</html>
